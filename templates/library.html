@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Library | PodcastBriefBot{% endblock %}
+
+{% block content %}
+<section class="space-y-12 animate-fade-slide-up">
+    <div class="space-y-4">
+        <h1 class="font-display-lg text-4xl md:text-5xl text-on-surface tracking-tight border-b border-white/5 pb-6">
+            Intelligence <span class="text-primary-container italic font-medium">Library</span>
+        </h1>
+        <p class="font-body-lg text-on-surface/60">Archive of your previously generated podcast briefs and research.</p>
+    </div>
+
+    {% if briefs %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+            {% for brief in briefs %}
+            <div class="bg-surface-container-high/40 backdrop-blur-sm fine-border group hover:border-primary-container/30 premium-transition shadow-xl overflow-hidden flex flex-col h-full cursor-pointer relative" onclick="window.location.href='{{ url_for('view_brief', brief_id=brief._id) }}'">
+                <!-- Thumbnail -->
+                <div class="relative aspect-video w-full overflow-hidden bg-black/50">
+                    <img src="https://img.youtube.com/vi/{{ brief.video_id }}/mqdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 premium-transition opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-surface-container-high/90 to-transparent"></div>
+                    <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end">
+                        <span class="text-[10px] font-agent-code tracking-widest uppercase text-primary-container bg-black/60 px-2 py-1">{{ brief.created_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4 flex-grow flex flex-col justify-between relative z-10">
+                    <div class="space-y-2">
+                        <span class="font-label-sm text-on-surface/40 uppercase tracking-[0.2em] text-[10px]">Subject: {{ brief.guest_name }}</span>
+                        <h3 class="font-display-lg text-xl text-on-surface leading-snug group-hover:text-primary-container premium-transition line-clamp-2">
+                            {{ brief.episode_title }}
+                        </h3>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
+                        <span class="font-label-sm text-on-surface/30 group-hover:text-on-surface/60 premium-transition text-[10px] uppercase tracking-widest flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[14px]">visibility</span> View Dossier
+                        </span>
+                        <span class="material-symbols-outlined text-primary-container opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 premium-transition text-[18px]">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-surface-container-high/20 border border-dashed border-white/10 p-16 text-center space-y-6">
+            <span class="material-symbols-outlined text-on-surface/20 text-6xl">folder_open</span>
+            <div class="space-y-2">
+                <h3 class="font-display-lg text-2xl text-on-surface/60">No Briefs Archived</h3>
+                <p class="font-body-lg text-on-surface/40">Your generated research will automatically be saved here.</p>
+            </div>
+            <button onclick="window.location.href='{{ url_for('index') }}'" class="bg-primary-container/10 text-primary-container font-label-sm px-6 py-3 uppercase tracking-[0.2em] hover:bg-primary-container hover:text-white premium-transition mt-4">
+                Start New Research
+            </button>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

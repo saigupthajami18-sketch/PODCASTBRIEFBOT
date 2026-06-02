@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Input Section -->
+<section id="heroSection" class="flex flex-col items-center justify-center space-y-10 text-center py-16">
+<div class="space-y-6 animate-fade-slide-up" style="animation-delay: 100ms;">
+<h1 class="font-display-lg text-4xl md:text-5xl lg:text-6xl text-on-surface leading-[1.1] tracking-tight">
+                Precision Research for Every <span class="text-primary-container italic font-medium">Episode</span>
+</h1>
+<p class="font-body-lg text-on-surface/60 max-w-2xl mx-auto leading-relaxed">
+                Input your source material and let the multi-agent AI orchestrate your complete production brief in seconds.
+            </p>
+</div>
+<div class="w-full max-w-3xl animate-fade-slide-up" style="animation-delay: 200ms;">
+<div class="relative flex items-center bg-surface-container-high/50 backdrop-blur-sm fine-border group focus-within:border-primary-container/40 premium-transition p-1.5 overflow-hidden">
+<span class="material-symbols-outlined ml-4 text-on-surface/30">link</span>
+<input id="urlInput" class="w-full bg-transparent border-none focus:ring-0 text-body-lg font-body-lg px-4 placeholder:text-on-surface/20 py-4 outline-none" placeholder="YouTube URL or Podcast Topic..." type="text">
+<button id="goBtn" onclick="startGeneration()" class="bg-primary-container text-white font-label-sm px-10 py-4 uppercase tracking-[0.2em] hover:brightness-110 active:scale-[0.98] premium-transition button-glow shadow-xl shadow-primary-container/20 relative z-10 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Generate
+                </button>
+</div>
+<div id="errorBox" class="hidden mt-6 text-primary-container font-agent-code text-sm p-4 fine-border bg-primary-container/10 text-left"></div>
+</div>
+</section>
+
+<!-- Agent Grid -->
+<section id="agentGrid" class="hidden-el grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- We map our 6 steps into 6 cards based on their design -->
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="fetching">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Data Fetching</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Retrieve Transcript</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Downloading subtitles...</li>
+</ul>
+</div>
+</div>
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="agent0">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Profile Agent</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Identify Speaker</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Entity Extraction...</li>
+</ul>
+</div>
+</div>
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="agent1">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Research Agent</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Context Extraction</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Extracting talking points...</li>
+</ul>
+</div>
+</div>
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="agent2">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Interview Prep</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Generating Questions</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Formulating Q&A...</li>
+</ul>
+</div>
+</div>
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="agent3">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Controversy Agent</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Fact Checking</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Identifying conflicts...</li>
+</ul>
+</div>
+</div>
+
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="building">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Compiler</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Assembly</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Building final report...</li>
+</ul>
+</div>
+</div>
+
+</section>
+
+<div id="statusMsg" class="hidden-el text-center font-agent-code text-sm text-primary-container animate-pulse mt-8"></div>
+
+<!-- Document Preview (Hidden until done) -->
+<div id="briefWrap" class="hidden-el w-full">
+<!-- Guest Profile & Source Data -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter animate-fade-slide-up mb-12">
+<div class="bg-surface-container-high/40 backdrop-blur-sm fine-border p-8 relative group hover:border-primary-container/20 premium-transition shadow-2xl overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-3 py-1.5 text-primary-container uppercase bg-primary-container/5">Featured Guest</span>
+</div>
+<div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+<div class="w-40 h-40 md:w-56 md:h-56 shrink-0 overflow-hidden fine-border rotate-3 group-hover:rotate-0 premium-transition bg-surface-variant flex items-center justify-center">
+<img id="guestImg" alt="Guest Portrait" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 hidden" src="">
+<span id="guestFallback" class="font-display-lg text-6xl text-on-surface/50">?</span>
+</div>
+<div class="space-y-4">
+<h3 id="guestName" class="font-display-lg text-3xl text-on-surface tracking-tight">—</h3>
+<h4 id="guestRole" class="font-label-sm text-primary-container uppercase tracking-widest text-[10px]"></h4>
+<p id="guestBio" class="font-body-lg text-on-surface/60 text-sm leading-relaxed">
+          ...
+        </p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary-container/40 text-xl">verified</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="bg-surface-container-high/40 backdrop-blur-sm fine-border p-8 relative group hover:border-primary-container/20 premium-transition shadow-2xl overflow-hidden">
+<div class="flex flex-col space-y-6 h-full">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-on-surface/30 uppercase tracking-[0.3em] text-[10px]">Source Material</span>
+<span class="material-symbols-outlined text-on-surface/20">youtube_activity</span>
+</div>
+<a id="briefUrl" href="#" target="_blank" class="relative aspect-video w-full overflow-hidden fine-border group-hover:border-primary-container/30 premium-transition shadow-xl shadow-black/40 block">
+<img id="videoThumb" alt="Source Thumbnail" class="w-full h-full object-cover" src="">
+<div class="absolute inset-0 bg-primary-container/20 opacity-0 group-hover:opacity-100 premium-transition flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-4xl">play_circle</span>
+</div>
+</a>
+<p id="episodeContext" class="font-body-lg text-on-surface/80 text-xs tracking-wide uppercase italic border-l-2 border-primary-container pl-3">—</p>
+</div>
+</div>
+</section>
+
+<!-- Full Brief Content -->
+<section class="bg-surface-container-lowest fine-border overflow-hidden flex flex-col shadow-2xl relative animate-fade-slide-up" style="animation-delay: 200ms;">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-container/40 via-primary-container to-primary-container/40 opacity-30"></div>
+<div class="bg-surface-container-high/40 px-margin-desktop py-10 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="text-[10px] font-bold tracking-[0.4em] uppercase text-primary-container/80">Confidential Research Brief</span>
+<span class="w-8 h-[1px] bg-primary-container/30"></span>
+<span id="briefWords" class="text-[10px] font-agent-code text-on-surface/40"></span>
+</div>
+<h2 id="episodeTitle" class="font-display-lg text-3xl md:text-4xl text-on-surface tracking-tight">Episode Brief</h2>
+</div>
+<div class="flex gap-6 pb-2">
+<button onclick="downloadBrief()" class="flex items-center gap-2 font-label-sm uppercase tracking-[0.2em] text-on-surface/40 hover:text-primary-container premium-transition button-glow-alt">
+<span class="material-symbols-outlined text-[18px]">download</span> .MD
+</button>
+<button onclick="copyBrief()" class="flex items-center gap-2 font-label-sm uppercase tracking-[0.2em] text-on-surface/40 hover:text-primary-container premium-transition button-glow-alt" id="copyBtn">
+<span class="material-symbols-outlined text-[18px]">content_copy</span> Copy
+</button>
+</div>
+</div>
+
+<div class="flex-grow p-margin-desktop overflow-y-auto custom-scrollbar space-y-20 min-h-[600px] bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')] bg-fixed">
+  <!-- Talking Points -->
+  <div class="max-w-4xl">
+    <div class="flex flex-col gap-3 mb-10">
+      <span class="font-label-sm text-primary-container uppercase tracking-[0.3em] text-[11px]">Section 01</span>
+      <h3 class="font-display-lg text-3xl text-on-surface border-b border-white/5 pb-5">Core Talking Points</h3>
+    </div>
+    <div id="tpList" class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- Questions -->
+  <div class="max-w-3xl">
+    <div class="flex flex-col gap-3 mb-10">
+      <span class="font-label-sm text-on-surface/30 uppercase tracking-[0.3em] text-[11px]">Section 02</span>
+      <h3 class="font-display-lg text-3xl text-on-surface border-b border-white/5 pb-5">Host Questions &amp; Prep</h3>
+    </div>
+    <ul id="qList" class="space-y-14">
+      <!-- Injected by JS -->
+    </ul>
+  </div>
+
+  <!-- Controversy -->
+  <div class="max-w-4xl grayscale opacity-60 hover:grayscale-0 hover:opacity-100 premium-transition duration-700">
+    <div class="flex flex-col gap-3 mb-10">
+      <span class="font-label-sm text-primary-container uppercase tracking-[0.3em] text-[11px]">Section 03</span>
+      <h3 class="font-display-lg text-3xl text-on-surface border-b border-primary-container/20 pb-5">Counterpoints &amp; Conflicts</h3>
+    </div>
+    <div id="cList" class="space-y-6">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+</div>
+</section>
+</div> <!-- /briefWrap -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentBriefText = '';
+
+// ── Agent progress tracking ──
+const agentOrder = ['fetching', 'agent0', 'agent1', 'agent2', 'agent3', 'building'];
+
+function activateAgent(status) {
+  const idx = agentOrder.indexOf(status);
+  if (idx === -1) return;
+
+  document.querySelectorAll('.agent-card').forEach((card, i) => {
+    const statusEl = card.querySelector('.agent-status');
+    const dot = card.querySelector('.agent-dot');
+    
+    // Reset classes first
+    card.classList.remove('fine-border-gold', 'opacity-100');
+    card.classList.add('opacity-50');
+    statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase';
+    dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20';
+
+    if (i < idx) {
+      // Done
+      card.classList.remove('opacity-50');
+      card.classList.add('opacity-100');
+      statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-2.5 py-1 text-primary-container uppercase bg-primary-container/5';
+      statusEl.textContent = 'DONE';
+      dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-primary-container';
+    } else if (i === idx) {
+      // Active
+      card.classList.remove('opacity-50');
+      card.classList.add('opacity-100', 'fine-border-gold', 'shimmer-bg');
+      statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-2.5 py-1 text-primary-container uppercase bg-primary-container/5 animate-status-active';
+      statusEl.textContent = 'ACTIVE';
+      dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse-soft shadow-[0_0_8px_rgba(201,42,42,0.8)]';
+    }
+  });
+}
+
+function completeAllAgents() {
+  document.querySelectorAll('.agent-card').forEach(card => {
+    const statusEl = card.querySelector('.agent-status');
+    const dot = card.querySelector('.agent-dot');
+    card.classList.remove('opacity-50', 'shimmer-bg', 'fine-border-gold');
+    card.classList.add('opacity-100');
+    statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-2.5 py-1 text-primary-container uppercase bg-primary-container/5';
+    statusEl.textContent = 'DONE';
+    dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-primary-container';
+  });
+}
+
+// ── Parsing helpers ──
+function parseContent(raw) {
+  const blocks = [];
+  const lines = raw.split('\n');
+  let current = null;
+  for (const line of lines) {
+    const titleMatch = line.match(/^\*{0,2}(\d+)\.\s+\*{0,2}(.+?)\*{0,2}$/);
+    if (titleMatch) {
+      if (current) blocks.push(current);
+      current = { title: titleMatch[2].replace(/\*/g,'').trim(), body: '' };
+    } else if (current) {
+      current.body += (current.body ? ' ' : '') + line.trim();
+    }
+  }
+  if (current) blocks.push(current);
+  return blocks;
+}
+
+function parseQuestions(raw) {
+  const qs = [];
+  const lines = raw.split('\n');
+  for (const line of lines) {
+    const m = line.match(/^\d+\.\s+(.+)/);
+    if (m) qs.push(m[1].trim());
+  }
+  return qs;
+}
+
+function handleProfileImage(imgUrl, imgElId, fallbackElId, name) {
+  const imgEl = document.getElementById(imgElId);
+  const fallEl = document.getElementById(fallbackElId);
+  if (imgUrl) {
+    imgEl.src = imgUrl;
+    imgEl.classList.remove('hidden');
+    fallEl.classList.add('hidden');
+  } else {
+    imgEl.classList.add('hidden');
+    fallEl.classList.remove('hidden');
+    fallEl.textContent = name && name !== 'Unknown' ? name.charAt(0).toUpperCase() : '?';
+  }
+}
+
+// ── Render the full brief ──
+function renderBrief(data) {
+  const profile = data.profile || {};
+
+  document.getElementById('videoThumb').src = `https://img.youtube.com/vi/${data.video_id}/maxresdefault.jpg`;
+  
+  document.getElementById('guestName').textContent = profile.guest_name || 'Unknown';
+  document.getElementById('guestRole').textContent = profile.guest_role || 'Subject';
+  document.getElementById('guestBio').textContent = profile.guest_bio || 'No bio extracted.';
+  document.getElementById('episodeContext').textContent = profile.episode_context || 'AI-generated podcast brief.';
+  document.getElementById('episodeTitle').textContent = profile.episode_title || 'Episode Brief';
+
+  handleProfileImage(data.guest_image, 'guestImg', 'guestFallback', profile.guest_name);
+
+  document.getElementById('briefWords').textContent = `${data.word_count.toLocaleString()} Words Evaluated`;
+  document.getElementById('briefUrl').href = data.url;
+
+  // Talking points map to their grid UI
+  const tps = parseContent(data.talking_points);
+  const tpList = document.getElementById('tpList');
+  if (tps.length > 0) {
+    tpList.innerHTML = tps.map((tp, i) => `
+      <div class="space-y-4 premium-transition hover:translate-x-1">
+        <span class="text-[10px] text-primary-container/40 font-bold uppercase tracking-[0.3em]">Insight ${String.fromCharCode(65 + i)}</span>
+        <h4 class="text-on-surface font-bold text-sm uppercase tracking-widest">${tp.title}</h4>
+        <p class="font-body-lg text-on-surface/90 leading-relaxed font-light text-lg">${tp.body}</p>
+      </div>`).join('');
+  } else {
+    tpList.innerHTML = `<div class="col-span-2 text-on-surface/60 font-body-lg whitespace-pre-wrap">${data.talking_points}</div>`;
+  }
+
+  // Questions map to their huge numbered UI
+  const qs = parseQuestions(data.questions);
+  const qList = document.getElementById('qList');
+  if (qs.length > 0) {
+    qList.innerHTML = qs.map((q, i) => `
+      <li class="group premium-transition">
+        <div class="flex gap-8">
+          <span class="font-display-lg text-5xl leading-none italic select-none premium-transition text-secondary group-hover:text-secondary/80">${String(i+1).padStart(2, '0')}.</span>
+          <div class="space-y-3">
+            <p class="font-display-lg text-on-surface italic text-2xl leading-snug premium-transition group-hover:translate-x-2">"${q}"</p>
+          </div>
+        </div>
+      </li>`).join('');
+  } else {
+    qList.innerHTML = `<li class="text-on-surface/60 font-body-lg whitespace-pre-wrap">${data.questions}</li>`;
+  }
+
+  // Controversy maps to their warning box
+  const cs = parseContent(data.controversies);
+  const cList = document.getElementById('cList');
+  if (cs.length > 0) {
+    cList.innerHTML = cs.map((c, i) => `
+      <div class="p-8 fine-border-gold bg-primary-container/5 backdrop-blur-sm relative overflow-hidden group hover:bg-primary-container/10 premium-transition">
+        <div class="text-[10px] text-primary-container font-bold uppercase tracking-[0.3em] mb-2">${c.title}</div>
+        <p class="text-on-surface/80 leading-relaxed font-body-lg relative z-10">${c.body}</p>
+      </div>`).join('');
+  } else {
+    cList.innerHTML = `<div class="text-on-surface/60 font-body-lg whitespace-pre-wrap">${data.controversies}</div>`;
+  }
+
+  currentBriefText = `# ${profile.episode_title || 'PODCAST EPISODE BRIEF'}
+Host: ${profile.host_name || 'Unknown'}
+Guest: ${profile.guest_name || 'Unknown'} — ${profile.guest_role || ''}
+Bio: ${profile.guest_bio || ''}
+Context: ${profile.episode_context || ''}
+Source: ${data.url}
+Words: ${data.word_count}
+
+## 5 Key Talking Points
+${data.talking_points}
+
+## 8 Interview Questions
+${data.questions}
+
+## 3 Controversies
+${data.controversies}`;
+
+  document.getElementById('briefWrap').classList.remove('hidden-el');
+  document.getElementById('briefWrap').classList.add('animate-fade-slide-up');
+  setTimeout(() => {
+    document.getElementById('briefWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ── Main Generation Flow ──
+async function startGeneration() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('goBtn');
+  btn.disabled = true;
+
+  document.getElementById('errorBox').classList.add('hidden');
+  document.getElementById('briefWrap').classList.add('hidden-el');
+  document.getElementById('agentGrid').classList.remove('hidden-el');
+  document.getElementById('statusMsg').classList.remove('hidden-el');
+  document.getElementById('statusMsg').textContent = 'Orchestrating agents...';
+
+  // Reset agent cards
+  document.querySelectorAll('.agent-card').forEach(card => {
+    card.classList.remove('opacity-100', 'fine-border-gold', 'shimmer-bg');
+    card.classList.add('opacity-50');
+    const statusEl = card.querySelector('.agent-status');
+    statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase';
+    statusEl.textContent = 'Idle';
+    const dot = card.querySelector('.agent-dot');
+    dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20';
+  });
+
+  try {
+    const resp = await fetch('/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const data = JSON.parse(line.slice(6));
+          document.getElementById('statusMsg').textContent = data.message || '';
+
+          if (agentOrder.includes(data.status)) {
+            activateAgent(data.status);
+          }
+
+          if (data.status === 'done') {
+            completeAllAgents();
+            document.getElementById('statusMsg').textContent = 'Brief generated successfully.';
+            setTimeout(() => {
+              document.getElementById('agentGrid').classList.add('hidden-el');
+              document.getElementById('statusMsg').classList.add('hidden-el');
+            }, 1200);
+            renderBrief(data);
+          } else if (data.status === 'error') {
+            throw new Error(data.message);
+          }
+        } catch(e) {
+          if (e.message && !e.message.includes('JSON')) throw e;
+        }
+      }
+    }
+  } catch(e) {
+    document.getElementById('agentGrid').classList.add('hidden-el');
+    document.getElementById('statusMsg').classList.add('hidden-el');
+    const eb = document.getElementById('errorBox');
+    eb.classList.remove('hidden');
+    eb.textContent = '// ERROR: ' + e.message;
+  }
+  btn.disabled = false;
+}
+
+function copyBrief() {
+  navigator.clipboard.writeText(currentBriefText).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span> Copied';
+    setTimeout(() => { btn.innerHTML = original; }, 2000);
+  });
+}
+
+function downloadBrief() {
+  const blob = new Blob([currentBriefText], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'podcast_brief.md';
+  a.click();
+}
+
+function resetForm() {
+  document.getElementById('urlInput').value = '';
+  document.getElementById('briefWrap').classList.add('hidden-el');
+  document.getElementById('agentGrid').classList.add('hidden-el');
+  document.getElementById('statusMsg').classList.add('hidden-el');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startGeneration();
+});
+</script>
+
+{% if preloaded_brief %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const data = {{ preloaded_brief | safe }};
+    document.getElementById('heroSection').classList.add('hidden');
+    renderBrief(data);
+});
+</script>
+{% endif %}
+{% endblock %}

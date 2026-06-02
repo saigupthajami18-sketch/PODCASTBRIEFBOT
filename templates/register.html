@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Register | PodcastBriefBot{% endblock %}
+
+{% block content %}
+<section class="flex flex-col items-center justify-center space-y-10 py-16 animate-fade-slide-up">
+    <div class="space-y-4 text-center">
+        <h1 class="font-display-lg text-4xl text-on-surface tracking-tight">Request <span class="text-primary-container italic">Access</span></h1>
+        <p class="font-body-lg text-on-surface/60 max-w-md mx-auto">Create a secure operative account to save and manage your intelligence briefs.</p>
+    </div>
+
+    <div class="w-full max-w-md bg-surface-container-high/40 backdrop-blur-sm fine-border p-10 shadow-2xl relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-container/40 via-primary-container to-primary-container/40 opacity-30"></div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-6 text-[12px] font-agent-code p-3 fine-border {% if category == 'error' %}bg-primary-container/10 text-primary-container{% else %}bg-secondary/10 text-secondary{% endif %}">
+                // {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}" class="space-y-6">
+            <div class="space-y-2">
+                <label class="font-label-sm text-on-surface/50 uppercase tracking-widest text-[10px]" for="username">Username</label>
+                <div class="relative flex items-center bg-surface-container-lowest fine-border focus-within:border-primary-container/40 premium-transition p-1">
+                    <span class="material-symbols-outlined ml-3 text-on-surface/30 text-[18px]">person_add</span>
+                    <input type="text" id="username" name="username" required class="w-full bg-transparent border-none focus:ring-0 text-body-lg font-body-lg px-3 py-3 outline-none text-on-surface placeholder:text-on-surface/20" placeholder="New Agent ID">
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="font-label-sm text-on-surface/50 uppercase tracking-widest text-[10px]" for="password">Password</label>
+                <div class="relative flex items-center bg-surface-container-lowest fine-border focus-within:border-primary-container/40 premium-transition p-1">
+                    <span class="material-symbols-outlined ml-3 text-on-surface/30 text-[18px]">key</span>
+                    <input type="password" id="password" name="password" required class="w-full bg-transparent border-none focus:ring-0 text-body-lg font-body-lg px-3 py-3 outline-none text-on-surface placeholder:text-on-surface/20" placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary-container text-white font-label-sm px-6 py-4 uppercase tracking-[0.2em] hover:brightness-110 active:scale-[0.98] premium-transition button-glow shadow-xl shadow-primary-container/20 mt-4">
+                Initialize Account
+            </button>
+        </form>
+
+        <div class="mt-8 text-center border-t border-white/5 pt-6">
+            <p class="font-label-sm text-on-surface/40 uppercase tracking-widest text-[10px]">
+                Already Registered? 
+                <a href="{{ url_for('login') }}" class="text-primary-container hover:text-white premium-transition ml-2">Authenticate</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
