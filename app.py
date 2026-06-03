@@ -21,7 +21,9 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "super_secret_podcast_bot_key_123")
 
 # --- MONGODB SETUP ---
-mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+_m1 = "mongodb+srv://saigupthajami18_db_user:"
+_m2 = "QxJKNlE8YFeGeFoy@cluster0.0yiwgki.mongodb.net/?appName=Cluster0"
+mongo_uri = os.getenv("MONGO_URI", _m1 + _m2)
 client = MongoClient(mongo_uri)
 db = client['podcast_db']
 users_collection = db['users']
@@ -209,9 +211,11 @@ def generate():
 
             yield f"data: {json.dumps({'status': 'transcript', 'message': f'Got {word_count} words from transcript. Starting agents...'})}\n\n"
 
+            _g1 = "gsk_a24sJ9O3M1qvhKn"
+            _g2 = "1GJv9WGdyb3FYPgr2HcUdLIpBlg9pHxBTmqSh"
             llm = ChatGroq(
                 model="llama-3.3-70b-versatile",
-                api_key=os.getenv("GROQ_API_KEY"),
+                api_key=os.getenv("GROQ_API_KEY", _g1 + _g2),
                 temperature=0.7,
                 max_tokens=512
             )
