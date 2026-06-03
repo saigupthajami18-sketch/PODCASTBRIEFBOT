@@ -24,8 +24,7 @@
 </section>
 
 <!-- Agent Grid -->
-<section id="agentGrid" class="hidden-el grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-<!-- We map our 6 steps into 6 cards based on their design -->
+<section id="agentGrid" class="hidden-el grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
 
 <div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="fetching">
 <div class="flex justify-between items-center">
@@ -52,7 +51,7 @@
 <span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
 </div>
 <div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
-<p class="mb-3">// Task: Identify Speaker</p>
+<p class="mb-3">// Task: Identify Speakers</p>
 <ul class="space-y-2.5">
 <li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Entity Extraction...</li>
 </ul>
@@ -107,6 +106,22 @@
 </div>
 </div>
 
+<div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="agent4">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20"></div>
+<h3 class="font-label-sm text-on-surface uppercase tracking-[0.2em]">Conversation Agent</h3>
+</div>
+<span class="agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase">Idle</span>
+</div>
+<div class="bg-black/40 p-4 fine-border border-white/5 font-agent-code text-[13px] leading-relaxed relative overflow-hidden text-on-surface/60">
+<p class="mb-3">// Task: Deep Summary</p>
+<ul class="space-y-2.5">
+<li class="flex items-center gap-3"><span class="w-1 h-1 bg-white/10 rounded-full"></span> Narrating discussion...</li>
+</ul>
+</div>
+</div>
+
 <div class="agent-card bg-surface-container-high/40 backdrop-blur-sm fine-border p-6 flex flex-col space-y-6 relative group premium-transition shadow-sm opacity-50" data-agent="building">
 <div class="flex justify-between items-center">
 <div class="flex items-center gap-3">
@@ -129,30 +144,50 @@
 
 <!-- Document Preview (Hidden until done) -->
 <div id="briefWrap" class="hidden-el w-full">
-<!-- Guest Profile & Source Data -->
-<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter animate-fade-slide-up mb-12">
+
+<!-- Host & Guest Profiles -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter animate-fade-slide-up mb-12">
+
+<!-- HOST Card -->
+<div class="bg-surface-container-high/40 backdrop-blur-sm fine-border p-8 relative group hover:border-primary-container/20 premium-transition shadow-2xl overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="text-[9px] font-bold tracking-[0.25em] border border-secondary/40 px-3 py-1.5 text-secondary uppercase bg-secondary/5">Host</span>
+</div>
+<div class="flex flex-col gap-6 items-center text-center">
+<div class="w-32 h-32 shrink-0 overflow-hidden fine-border rounded-full group-hover:border-secondary/30 premium-transition bg-surface-variant flex items-center justify-center">
+<img id="hostImg" alt="Host Portrait" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 hidden" src="">
+<span id="hostFallback" class="font-display-lg text-5xl text-on-surface/50">?</span>
+</div>
+<div class="space-y-3">
+<h3 id="hostName" class="font-display-lg text-2xl text-on-surface tracking-tight">—</h3>
+<h4 id="hostRole" class="font-label-sm text-secondary uppercase tracking-widest text-[10px]"></h4>
+<p id="hostBio" class="font-body-lg text-on-surface/60 text-sm leading-relaxed">...</p>
+</div>
+</div>
+</div>
+
+<!-- GUEST Card -->
 <div class="bg-surface-container-high/40 backdrop-blur-sm fine-border p-8 relative group hover:border-primary-container/20 premium-transition shadow-2xl overflow-hidden">
 <div class="absolute top-0 right-0 p-4">
 <span class="text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-3 py-1.5 text-primary-container uppercase bg-primary-container/5">Featured Guest</span>
 </div>
-<div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-<div class="w-40 h-40 md:w-56 md:h-56 shrink-0 overflow-hidden fine-border rotate-3 group-hover:rotate-0 premium-transition bg-surface-variant flex items-center justify-center">
+<div class="flex flex-col gap-6 items-center text-center">
+<div class="w-32 h-32 shrink-0 overflow-hidden fine-border rounded-full group-hover:border-primary-container/30 premium-transition bg-surface-variant flex items-center justify-center">
 <img id="guestImg" alt="Guest Portrait" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 hidden" src="">
-<span id="guestFallback" class="font-display-lg text-6xl text-on-surface/50">?</span>
+<span id="guestFallback" class="font-display-lg text-5xl text-on-surface/50">?</span>
 </div>
-<div class="space-y-4">
-<h3 id="guestName" class="font-display-lg text-3xl text-on-surface tracking-tight">—</h3>
+<div class="space-y-3">
+<h3 id="guestName" class="font-display-lg text-2xl text-on-surface tracking-tight">—</h3>
 <h4 id="guestRole" class="font-label-sm text-primary-container uppercase tracking-widest text-[10px]"></h4>
-<p id="guestBio" class="font-body-lg text-on-surface/60 text-sm leading-relaxed">
-          ...
-        </p>
-<div class="flex gap-4">
+<p id="guestBio" class="font-body-lg text-on-surface/60 text-sm leading-relaxed">...</p>
+<div class="flex gap-4 justify-center">
 <span class="material-symbols-outlined text-primary-container/40 text-xl">verified</span>
 </div>
 </div>
 </div>
 </div>
 
+<!-- Source Material Card -->
 <div class="bg-surface-container-high/40 backdrop-blur-sm fine-border p-8 relative group hover:border-primary-container/20 premium-transition shadow-2xl overflow-hidden">
 <div class="flex flex-col space-y-6 h-full">
 <div class="flex justify-between items-center">
@@ -193,6 +228,18 @@
 </div>
 
 <div class="flex-grow p-margin-desktop overflow-y-auto custom-scrollbar space-y-20 min-h-[600px] bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')] bg-fixed">
+
+  <!-- Conversation Summary (NEW) -->
+  <div class="max-w-4xl">
+    <div class="flex flex-col gap-3 mb-10">
+      <span class="font-label-sm text-secondary uppercase tracking-[0.3em] text-[11px]">Section 00</span>
+      <h3 class="font-display-lg text-3xl text-on-surface border-b border-secondary/20 pb-5">What They Actually Discussed</h3>
+    </div>
+    <div id="conversationSummary" class="prose prose-invert max-w-none">
+      <p class="font-body-lg text-on-surface/85 leading-[1.9] text-lg font-light">Loading conversation summary...</p>
+    </div>
+  </div>
+
   <!-- Talking Points -->
   <div class="max-w-4xl">
     <div class="flex flex-col gap-3 mb-10">
@@ -231,11 +278,182 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- Jarvis Neural Core Chatbot -->
+<style>
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes core-pulse {
+    0%, 100% { box-shadow: 0 0 20px #e50914, inset 0 0 15px #e50914; transform: scale(1); }
+    50% { box-shadow: 0 0 40px #e50914, inset 0 0 25px #e50914; transform: scale(1.05); }
+  }
+  .animate-core-pulse { animation: core-pulse 2s cubic-bezier(0.4,0,0.2,1) infinite; }
+  .rotate-slow { animation: rotate-slow 8s linear infinite; }
+  .rotate-reverse { animation: rotate-reverse 12s linear infinite; }
+  @keyframes message-slide-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  .animate-message { animation: message-slide-in 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+  @keyframes typing-dot {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+  .typing-dot-1 { animation: typing-dot 1.4s infinite 0s; }
+  .typing-dot-2 { animation: typing-dot 1.4s infinite 0.2s; }
+  .typing-dot-3 { animation: typing-dot 1.4s infinite 0.4s; }
+</style>
+
+<div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-6">
+  <!-- Chat Interface -->
+  <div class="hidden w-[400px] max-h-[520px] bg-[#0e0e0e]/95 backdrop-blur-2xl border border-[#e50914]/30 shadow-[0_20px_50px_rgba(229,9,20,0.15)] flex flex-col premium-transition opacity-0 translate-y-10" id="jarvis-chat">
+    <div class="p-4 border-b border-[#e50914]/20 flex items-center justify-between bg-[#e50914]/5">
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 rounded-full bg-[#e50914] animate-pulse"></div>
+        <span class="font-agent-code text-[11px] uppercase tracking-[0.3em] text-[#e50914]">PODCAST_AI_ASSISTANT</span>
+      </div>
+      <button class="text-on-surface/40 hover:text-[#e50914] transition-colors" onclick="toggleJarvis()">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div id="chatMessages" class="flex-grow overflow-y-auto p-6 space-y-6 custom-scrollbar min-h-[300px]">
+      <div class="animate-message flex flex-col gap-2">
+        <span class="font-agent-code text-[9px] text-[#e50914] uppercase tracking-widest">Protocol Initialized</span>
+        <div class="bg-slate-800/20 backdrop-blur-sm border border-white/5 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl max-w-[85%]">
+          <p class="font-agent-code text-sm text-on-surface/80 leading-relaxed italic">"Generate a podcast brief first, then ask me anything about it. I'll give you exact answers from the transcript."</p>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 border-t border-[#e50914]/20 bg-black/40">
+      <div class="relative flex items-center gap-2">
+        <input id="chatInput" class="w-full bg-transparent border-none focus:ring-0 text-sm font-agent-code placeholder:text-on-surface/20 text-on-surface py-2 outline-none" placeholder="Ask about the podcast..." type="text" onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button onclick="sendChatMessage()" class="text-[#e50914]/50 hover:text-[#e50914] transition-colors shrink-0">
+          <span class="material-symbols-outlined text-xl">send</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Neural Core Button -->
+  <button class="group relative w-16 h-16 flex items-center justify-center premium-transition outline-none" id="neural-core" onclick="toggleJarvis()">
+    <div class="absolute inset-0 border border-[#e50914]/20 rounded-full rotate-slow"></div>
+    <div class="absolute inset-2 border border-[#e50914]/40 rounded-full rotate-reverse"></div>
+    <div class="absolute inset-0 border-t-2 border-[#e50914]/60 rounded-full rotate-slow"></div>
+    <div class="relative w-10 h-10 bg-[#0e0e0e] border border-[#e50914]/60 rounded-full flex items-center justify-center animate-core-pulse overflow-hidden">
+      <div class="absolute inset-0 bg-[#e50914]/10"></div>
+      <span class="material-symbols-outlined text-[#e50914] text-xl relative z-10 font-light group-hover:scale-110 transition-transform">bolt</span>
+    </div>
+    <div class="absolute right-20 bg-[#0e0e0e]/90 border border-[#e50914]/30 px-3 py-1.5 opacity-0 group-hover:opacity-100 premium-transition pointer-events-none whitespace-nowrap">
+      <span class="font-agent-code text-[10px] text-[#e50914] uppercase tracking-widest">Ask About Podcast</span>
+    </div>
+  </button>
+</div>
+
 <script>
 let currentBriefText = '';
+let currentTranscript = '';
+
+// ── Jarvis Chatbot ──
+function toggleJarvis() {
+  const chat = document.getElementById('jarvis-chat');
+  if (chat.classList.contains('hidden')) {
+    chat.classList.remove('hidden');
+    chat.offsetHeight;
+    chat.classList.remove('opacity-0', 'translate-y-10');
+    chat.classList.add('opacity-100', 'translate-y-0');
+    document.getElementById('chatInput').focus();
+  } else {
+    chat.classList.add('opacity-0', 'translate-y-10');
+    chat.classList.remove('opacity-100', 'translate-y-0');
+    setTimeout(() => chat.classList.add('hidden'), 400);
+  }
+}
+
+function addChatMessage(text, isUser) {
+  const container = document.getElementById('chatMessages');
+  const wrapper = document.createElement('div');
+  wrapper.className = `animate-message flex flex-col gap-2 ${isUser ? 'items-end' : ''}`;
+
+  const label = document.createElement('span');
+  label.className = `font-agent-code text-[9px] ${isUser ? 'text-on-surface/30' : 'text-[#e50914]'} uppercase tracking-widest`;
+  label.textContent = isUser ? 'Your Question' : 'AI Response';
+
+  const bubble = document.createElement('div');
+  bubble.className = isUser
+    ? 'bg-[#e50914]/10 border border-[#e50914]/20 p-3 rounded-tl-xl rounded-bl-xl rounded-br-xl max-w-[85%]'
+    : 'bg-slate-800/20 backdrop-blur-sm border border-white/5 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl max-w-[85%]';
+
+  const p = document.createElement('p');
+  p.className = isUser
+    ? 'font-body-lg text-sm text-on-surface/90'
+    : 'font-agent-code text-sm text-on-surface/80 leading-relaxed';
+  p.textContent = text;
+
+  bubble.appendChild(p);
+  wrapper.appendChild(label);
+  wrapper.appendChild(bubble);
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTypingIndicator() {
+  const container = document.getElementById('chatMessages');
+  const indicator = document.createElement('div');
+  indicator.id = 'typingIndicator';
+  indicator.className = 'animate-message flex flex-col gap-2';
+  indicator.innerHTML = `
+    <span class="font-agent-code text-[9px] text-[#e50914] uppercase tracking-widest">Processing</span>
+    <div class="bg-slate-800/20 border border-white/5 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl flex gap-1.5 items-center">
+      <div class="w-2 h-2 rounded-full bg-[#e50914] typing-dot-1"></div>
+      <div class="w-2 h-2 rounded-full bg-[#e50914] typing-dot-2"></div>
+      <div class="w-2 h-2 rounded-full bg-[#e50914] typing-dot-3"></div>
+    </div>`;
+  container.appendChild(indicator);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if (!question) return;
+
+  addChatMessage(question, true);
+  input.value = '';
+
+  if (!currentTranscript) {
+    addChatMessage("Please generate a podcast brief first! I need the transcript to answer your questions.", false);
+    return;
+  }
+
+  showTypingIndicator();
+
+  try {
+    const resp = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, transcript: currentTranscript })
+    });
+    const data = await resp.json();
+    removeTypingIndicator();
+    addChatMessage(data.answer, false);
+  } catch (e) {
+    removeTypingIndicator();
+    addChatMessage("Connection error. Please try again.", false);
+  }
+}
 
 // ── Agent progress tracking ──
-const agentOrder = ['fetching', 'agent0', 'agent1', 'agent2', 'agent3', 'building'];
+const agentOrder = ['fetching', 'agent0', 'agent1', 'agent2', 'agent3', 'agent4', 'building'];
 
 function activateAgent(status) {
   const idx = agentOrder.indexOf(status);
@@ -245,21 +463,18 @@ function activateAgent(status) {
     const statusEl = card.querySelector('.agent-status');
     const dot = card.querySelector('.agent-dot');
     
-    // Reset classes first
     card.classList.remove('fine-border-gold', 'opacity-100');
     card.classList.add('opacity-50');
     statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-white/10 px-2.5 py-1 text-on-surface/40 uppercase';
     dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-on-surface/20';
 
     if (i < idx) {
-      // Done
       card.classList.remove('opacity-50');
       card.classList.add('opacity-100');
       statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-2.5 py-1 text-primary-container uppercase bg-primary-container/5';
       statusEl.textContent = 'DONE';
       dot.className = 'agent-dot w-1.5 h-1.5 rounded-full bg-primary-container';
     } else if (i === idx) {
-      // Active
       card.classList.remove('opacity-50');
       card.classList.add('opacity-100', 'fine-border-gold', 'shimmer-bg');
       statusEl.className = 'agent-status text-[9px] font-bold tracking-[0.25em] border border-primary-container/40 px-2.5 py-1 text-primary-container uppercase bg-primary-container/5 animate-status-active';
@@ -329,18 +544,35 @@ function renderBrief(data) {
 
   document.getElementById('videoThumb').src = `https://img.youtube.com/vi/${data.video_id}/maxresdefault.jpg`;
   
+  // Guest
   document.getElementById('guestName').textContent = profile.guest_name || 'Unknown';
   document.getElementById('guestRole').textContent = profile.guest_role || 'Subject';
   document.getElementById('guestBio').textContent = profile.guest_bio || 'No bio extracted.';
-  document.getElementById('episodeContext').textContent = profile.episode_context || 'AI-generated podcast brief.';
-  document.getElementById('episodeTitle').textContent = profile.episode_title || 'Episode Brief';
-
   handleProfileImage(data.guest_image, 'guestImg', 'guestFallback', profile.guest_name);
 
+  // Host
+  document.getElementById('hostName').textContent = profile.host_name || 'Unknown';
+  document.getElementById('hostRole').textContent = profile.host_role || 'Podcast Host';
+  document.getElementById('hostBio').textContent = profile.host_bio || 'Host of this podcast.';
+  handleProfileImage(data.host_image, 'hostImg', 'hostFallback', profile.host_name);
+
+  document.getElementById('episodeContext').textContent = profile.episode_context || 'AI-generated podcast brief.';
+  document.getElementById('episodeTitle').textContent = profile.episode_title || 'Episode Brief';
   document.getElementById('briefWords').textContent = `${data.word_count.toLocaleString()} Words Evaluated`;
   document.getElementById('briefUrl').href = data.url;
 
-  // Talking points map to their grid UI
+  // Conversation Summary
+  if (data.conversation_summary) {
+    const paragraphs = data.conversation_summary.split('\n\n').filter(p => p.trim());
+    document.getElementById('conversationSummary').innerHTML = paragraphs.map(p =>
+      `<p class="font-body-lg text-on-surface/85 leading-[1.9] text-lg font-light mb-6">${p.trim()}</p>`
+    ).join('');
+  }
+
+  // Store transcript for chatbot
+  currentTranscript = data.transcript_snippet || '';
+
+  // Talking points
   const tps = parseContent(data.talking_points);
   const tpList = document.getElementById('tpList');
   if (tps.length > 0) {
@@ -354,7 +586,7 @@ function renderBrief(data) {
     tpList.innerHTML = `<div class="col-span-2 text-on-surface/60 font-body-lg whitespace-pre-wrap">${data.talking_points}</div>`;
   }
 
-  // Questions map to their huge numbered UI
+  // Questions
   const qs = parseQuestions(data.questions);
   const qList = document.getElementById('qList');
   if (qs.length > 0) {
@@ -371,7 +603,7 @@ function renderBrief(data) {
     qList.innerHTML = `<li class="text-on-surface/60 font-body-lg whitespace-pre-wrap">${data.questions}</li>`;
   }
 
-  // Controversy maps to their warning box
+  // Controversies
   const cs = parseContent(data.controversies);
   const cList = document.getElementById('cList');
   if (cs.length > 0) {
@@ -385,12 +617,15 @@ function renderBrief(data) {
   }
 
   currentBriefText = `# ${profile.episode_title || 'PODCAST EPISODE BRIEF'}
-Host: ${profile.host_name || 'Unknown'}
+Host: ${profile.host_name || 'Unknown'} — ${profile.host_role || 'Host'}
 Guest: ${profile.guest_name || 'Unknown'} — ${profile.guest_role || ''}
 Bio: ${profile.guest_bio || ''}
 Context: ${profile.episode_context || ''}
 Source: ${data.url}
 Words: ${data.word_count}
+
+## What They Actually Discussed
+${data.conversation_summary || ''}
 
 ## 5 Key Talking Points
 ${data.talking_points}

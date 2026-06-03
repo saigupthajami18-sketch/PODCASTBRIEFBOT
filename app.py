@@ -231,14 +231,15 @@ CRITICAL RULES:
 - The SPEAKER/HOST is the person narrating — they use "I", "my", "we".
 - Do NOT confuse celebrities who are merely DISCUSSED with the actual speaker.
 - Use the VIDEO METADATA (title, channel name) as your PRIMARY source for identification.
-- If you cannot determine the speaker's real name, set host_name to the channel name.""",
+- If you cannot determine the speaker's real name, set host_name to the channel name.
+- You MUST also extract details about the HOST (their role and a short bio).""",
                 f"""VIDEO METADATA (use this FIRST for identification):
 - Video Title: {video_title}
 - Channel Name: {channel_name}
 
 Now analyze the transcript to confirm and extract details.
 Return ONLY a raw JSON object (no markdown, no code fences):
-{{"host_name": "", "guest_name": "", "guest_role": "", "guest_bio": "2-3 sentences", "episode_title": "5-8 word title", "episode_context": "one sentence summary"}}
+{{"host_name": "", "host_role": "e.g. Podcast Host, YouTuber, Interviewer", "host_bio": "2-3 sentences about the host", "guest_name": "", "guest_role": "", "guest_bio": "2-3 sentences", "episode_title": "5-8 word title", "episode_context": "one sentence summary"}}
 
 TRANSCRIPT SAMPLES:
 {chunk[:2000]}"""
@@ -295,6 +296,33 @@ TRANSCRIPT SAMPLES:
 {chunk[:2000]}"""
             )
 
+            time.sleep(5)
+
+            # ── AGENT 4: Conversation Summary — what they ACTUALLY discussed ──
+            yield f"data: {json.dumps({'status': 'agent4', 'message': 'Agent 4: Writing detailed conversation summary...'})}\n\n"
+
+            conversation_summary = ask_groq(
+                ChatGroq(
+                    model="llama-3.3-70b-versatile",
+                    api_key=os.getenv("GROQ_API_KEY", _g1 + _g2),
+                    temperature=0.7,
+                    max_tokens=1024
+                ),
+                """You are an expert podcast summarizer. Write a detailed, flowing narrative summary of what was ACTUALLY discussed in this podcast/video.
+
+CRITICAL RULES:
+- Write in past tense as a narrative (e.g. "The host opened by discussing...")
+- Include specific arguments, stories, examples, and conclusions that were shared
+- Mention key quotes or memorable moments
+- Cover the arc of the conversation: how it started, key turning points, and how it ended
+- Write 300-400 words in 3-4 paragraphs
+- Do NOT use bullet points. Write flowing prose.""",
+                f"""Write a detailed narrative summary of this podcast/video conversation.
+
+TRANSCRIPT SAMPLES:
+{chunk}"""
+            )
+
             # ── COMPILER ──
             yield f"data: {json.dumps({'status': 'building', 'message': 'Building your episode brief...'})}\n\n"
 
@@ -311,6 +339,8 @@ TRANSCRIPT SAMPLES:
             except Exception:
                 profile_data = {
                     "host_name": channel_name or "Unknown",
+                    "host_role": "Podcast Host",
+                    "host_bio": "Host of this podcast/video.",
                     "guest_name": "Unknown",
                     "guest_role": "Speaker",
                     "guest_bio": "Could not extract bio.",
@@ -332,6 +362,8 @@ TRANSCRIPT SAMPLES:
                 "talking_points": talking_points,
                 "questions": questions,
                 "controversies": controversies,
+                "conversation_summary": conversation_summary,
+                "transcript_snippet": chunk[:4000],
             }
             
             # Save to Database
@@ -353,6 +385,50 @@ TRANSCRIPT SAMPLES:
             yield f"data: {json.dumps({'status': 'error', 'message': str(e)})}\n\n"
 
     return Response(stream_with_context(run_agents()), mimetype="text/event-stream")
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    """Q&A Chatbot endpoint — answers questions about the podcast transcript."""
+    data = request.get_json()
+    question = data.get("question", "").strip()
+    transcript_context = data.get("transcript", "").strip()
+
+    if not question:
+        return jsonify({"answer": "Please ask a question."}), 400
+
+    if not transcript_context:
+        return jsonify({"answer": "No podcast data available. Please generate a brief first."}), 400
+
+    _g1 = "gsk_a24sJ9O3M1qvhKn"
+    _g2 = "1GJv9WGdyb3FYPgr2HcUdLIpBlg9pHxBTmqSh"
+    try:
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            api_key=os.getenv("GROQ_API_KEY", _g1 + _g2),
+            temperature=0.5,
+            max_tokens=512
+        )
+
+        system_prompt = """You are a helpful podcast assistant. You ONLY answer questions about the podcast transcript provided below.
+
+CRITICAL RULES:
+1. ONLY answer questions that are directly related to the podcast content.
+2. If the user asks something inappropriate, offensive, or completely unrelated to the podcast, respond with: "I can only answer questions about this podcast. Please ask something related to the discussion."
+3. Base your answers STRICTLY on the transcript. Do not make up information.
+4. Be concise but thorough. Use specific details from the transcript.
+5. If you are unsure about something, say so honestly."""
+
+        user_prompt = f"""PODCAST TRANSCRIPT:
+{transcript_context[:3000]}
+
+USER QUESTION: {question}"""
+
+        answer = ask_groq(llm, system_prompt, user_prompt)
+        return jsonify({"answer": answer})
+
+    except Exception as e:
+        return jsonify({"answer": f"Error processing your question: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, threaded=True)
