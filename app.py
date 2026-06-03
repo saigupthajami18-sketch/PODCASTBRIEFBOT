@@ -22,7 +22,7 @@ app.secret_key = os.getenv("SECRET_KEY", "super_secret_podcast_bot_key_123")
 
 # --- MONGODB SETUP ---
 _m1 = "mongodb+srv://saigupthajami18_db_user:"
-_m2 = "QxJKNlE8YFeGeFoy@cluster0.0yiwgki.mongodb.net/?appName=Cluster0"
+_m2 = "podcast123@cluster0.0yiwgki.mongodb.net/?appName=Cluster0"
 mongo_uri = os.getenv("MONGO_URI", _m1 + _m2)
 client = MongoClient(mongo_uri)
 db = client['podcast_db']
