@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qs, quote
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_groq import ChatGroq
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
@@ -363,7 +363,7 @@ TRANSCRIPT SAMPLES:
                 "questions": questions,
                 "controversies": controversies,
                 "conversation_summary": conversation_summary,
-                "transcript_snippet": chunk[:4000],
+                "transcript_snippet": chunk[:10000],
             }
             
             # Save to Database
@@ -388,10 +388,11 @@ TRANSCRIPT SAMPLES:
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    """Q&A Chatbot endpoint — answers questions about the podcast transcript."""
+    """Q&A Chatbot endpoint — answers questions about the podcast transcript with history."""
     data = request.get_json()
     question = data.get("question", "").strip()
     transcript_context = data.get("transcript", "").strip()
+    history = data.get("history", [])
 
     if not question:
         return jsonify({"answer": "Please ask a question."}), 400
@@ -409,22 +410,36 @@ def chat():
             max_tokens=512
         )
 
-        system_prompt = """You are a helpful podcast assistant. You ONLY answer questions about the podcast transcript provided below.
+        system_prompt = """You are a highly capable, conversational podcast assistant. You answer the user's questions about the podcast transcript provided.
 
 CRITICAL RULES:
-1. ONLY answer questions that are directly related to the podcast content.
-2. If the user asks something inappropriate, offensive, or completely unrelated to the podcast, respond with: "I can only answer questions about this podcast. Please ask something related to the discussion."
-3. Base your answers STRICTLY on the transcript. Do not make up information.
-4. Be concise but thorough. Use specific details from the transcript.
+1. ONLY answer questions that are directly related to the podcast content or the ongoing conversation.
+2. If the user asks something completely unrelated to the podcast, respond with: "I can only answer questions about this podcast. Please ask something related to the discussion."
+3. Base your answers strictly on the transcript. Do not make up information.
+4. Be conversational, helpful, and natural. Don't be robotic.
 5. If you are unsure about something, say so honestly."""
 
-        user_prompt = f"""PODCAST TRANSCRIPT:
-{transcript_context[:3000]}
+        # Build message history
+        messages = [SystemMessage(content=system_prompt)]
+        
+        # We put the transcript context into the system prompt conceptually,
+        # but to ensure it's fresh, we can append it as the first user message 
+        # or embed it in the current prompt.
+        for msg in history:
+            if msg.get("role") == "user":
+                messages.append(HumanMessage(content=msg.get("content")))
+            elif msg.get("role") == "assistant":
+                messages.append(AIMessage(content=msg.get("content")))
+
+        user_prompt = f"""PODCAST TRANSCRIPT CONTEXT:
+{transcript_context[:10000]}
 
 USER QUESTION: {question}"""
+        
+        messages.append(HumanMessage(content=user_prompt))
 
-        answer = ask_groq(llm, system_prompt, user_prompt)
-        return jsonify({"answer": answer})
+        response = llm.invoke(messages)
+        return jsonify({"answer": response.content})
 
     except Exception as e:
         return jsonify({"answer": f"Error processing your question: {str(e)}"}), 500

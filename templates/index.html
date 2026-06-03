@@ -357,6 +357,7 @@
 <script>
 let currentBriefText = '';
 let currentTranscript = '';
+let chatHistory = [];
 
 // ── Jarvis Chatbot ──
 function toggleJarvis() {
@@ -441,11 +442,15 @@ async function sendChatMessage() {
     const resp = await fetch('/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, transcript: currentTranscript })
+      body: JSON.stringify({ question, transcript: currentTranscript, history: chatHistory })
     });
     const data = await resp.json();
     removeTypingIndicator();
     addChatMessage(data.answer, false);
+    
+    // Add to history so AI remembers the conversation
+    chatHistory.push({ role: 'user', content: question });
+    chatHistory.push({ role: 'assistant', content: data.answer });
   } catch (e) {
     removeTypingIndicator();
     addChatMessage("Connection error. Please try again.", false);
