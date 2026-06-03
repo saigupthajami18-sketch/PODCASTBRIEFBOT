@@ -1,5 +1,4 @@
 flask
-crewai==1.14.6
 langchain-groq
 youtube-transcript-api
 python-dotenv
