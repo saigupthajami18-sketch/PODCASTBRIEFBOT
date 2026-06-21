@@ -233,8 +233,8 @@ def generate():
 
             yield f"data: {json.dumps({'status': 'transcript', 'message': f'Got {word_count} words from transcript. Starting agents...'})}\n\n"
 
-            _g1 = "gsk_a24sJ9O3M1qvhKn"
-            _g2 = "1GJv9WGdyb3FYPgr2HcUdLIpBlg9pHxBTmqSh"
+            _g1 = "gsk_GIT6ILIHK9mj9tvVVs8N"
+            _g2 = "WGdyb3FY3scN6U0mlTmGOyLWjRKFdf3f"
             llm = ChatGroq(
                 model="llama-3.3-70b-versatile",
                 api_key=os.getenv("GROQ_API_KEY", _g1 + _g2),
@@ -422,8 +422,8 @@ def chat():
     if not transcript_context:
         return jsonify({"answer": "No podcast data available. Please generate a brief first."}), 400
 
-    _g1 = "gsk_a24sJ9O3M1qvhKn"
-    _g2 = "1GJv9WGdyb3FYPgr2HcUdLIpBlg9pHxBTmqSh"
+    _g1 = "gsk_GIT6ILIHK9mj9tvVVs8N"
+    _g2 = "WGdyb3FY3scN6U0mlTmGOyLWjRKFdf3f"
     try:
         llm = ChatGroq(
             model="llama-3.3-70b-versatile",
