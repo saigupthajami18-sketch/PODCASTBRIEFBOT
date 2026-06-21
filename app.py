@@ -76,19 +76,22 @@ def get_video_metadata(video_id: str) -> dict:
 def get_transcript(url: str) -> str:
     video_id = extract_video_id(url)
     
-    proxies = {}
+    proxy_config = None
     youtube_proxy = os.getenv("YOUTUBE_PROXY")
     if youtube_proxy:
-        proxies = {
-            "http": youtube_proxy,
-            "https": youtube_proxy
-        }
+        try:
+            from youtube_transcript_api.proxies import GenericProxyConfig
+            proxy_config = GenericProxyConfig(http_url=youtube_proxy, https_url=youtube_proxy)
+        except ImportError:
+            pass
         
     try:
-        if proxies:
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies)
+        if proxy_config:
+            ytt = YouTubeTranscriptApi(proxy_config=proxy_config)
         else:
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            ytt = YouTubeTranscriptApi()
+            
+        transcript_list = ytt.list(video_id)
             
         transcript = transcript_list.find_transcript(
             [t.language_code for t in transcript_list]
