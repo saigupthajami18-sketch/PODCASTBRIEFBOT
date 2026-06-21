@@ -75,13 +75,35 @@ def get_video_metadata(video_id: str) -> dict:
 
 def get_transcript(url: str) -> str:
     video_id = extract_video_id(url)
-    ytt = YouTubeTranscriptApi()
-    transcript_list = ytt.list(video_id)
-    transcript = transcript_list.find_transcript(
-        [t.language_code for t in transcript_list]
-    )
-    fetched = transcript.fetch()
-    return " ".join(s.text for s in fetched)
+    
+    proxies = {}
+    youtube_proxy = os.getenv("YOUTUBE_PROXY")
+    if youtube_proxy:
+        proxies = {
+            "http": youtube_proxy,
+            "https": youtube_proxy
+        }
+        
+    try:
+        if proxies:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxies)
+        else:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            
+        transcript = transcript_list.find_transcript(
+            [t.language_code for t in transcript_list]
+        )
+        fetched = transcript.fetch()
+        return " ".join(s.text for s in fetched)
+    except Exception as e:
+        error_msg = str(e)
+        if "blocking requests from your IP" in error_msg or "TooManyRequests" in error_msg:
+            raise Exception(
+                "YouTube has blocked this server's IP address (common on Vercel/cloud platforms). "
+                "To fix this, please set up a rotating residential proxy (like WebShare) and add it as the 'YOUTUBE_PROXY' "
+                "environment variable in your Vercel project settings (format: http://user:pass@ip:port)."
+            )
+        raise Exception(f"Failed to fetch transcript: {error_msg}")
 
 def ask_groq(llm, system_prompt, user_prompt):
     messages = [
